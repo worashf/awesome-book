@@ -1,48 +1,67 @@
+const listBook = document.getElementById('book-list');
+const addForm = document.getElementById('add-form');
+const title = document.getElementById('title');
+const author = document.getElementById('author');
 
-const books =[];
-let listBook= document.getElementById("list-book");
-let  addForm =document.getElementById("add-form");
-let title= document.getElementById("title");
-let author=document.getElementById("author");
-let addBnt= document.getElementById("add-btn");
+const getBooks = () => {
+  let books;
 
-const addbook = (book)=>{
-     let book ={
-         title:title.value,
-         author:author.value
-     }
+  if (localStorage.getItem('books') === null) {
+    books = [];
+  } else {
+    books = JSON.parse(localStorage.getItem('books'));
+  }
+  return books;
+};
 
+const addBookToStorage = (book) => {
+  const storedBooks = getBooks();
+  storedBooks.push(book);
+  localStorage.setItem('books', JSON.stringify(storedBooks));
+};
 
-
-}
-const displayBooks =()=>{
-    let bookDiv =""
-    books.forEach(book=>{
-        bookDiv +=`
+const displayBooks = () => {
+  const bookList = getBooks();
+  let bookDiv = '';
+  if (bookList.length !== 0 && bookList) {
+    bookList.forEach((book, index) => {
+      bookDiv += `
+                <div class="book">
+                <div class="form-group>
+                <p class="book-title">${book.title}</p>
+                <p class="book-author">${book.author}</p>
+                  </div>
+                <button type="button" id="remove-btn"  onClick='removeBook(${index})'> Remove </button>
+                 <div class="line"> </div>
+                </div>`;
+    });
+    listBook.innerHTML = bookDiv;
+  } else {
+    bookDiv += `
           <div class="book">
-          <p class="book-title">${book.title}</p>
-          <p class="">${book.author}</p>
-          <button type="button" id="remove-btn"> Remove </button>
-          </div>
-        `
-      
-    })
-listBook.innerHTML= bookDiv;
+          <p class="book-message"> No book Available<p>
+          </div> `;
+    listBook.innerHTML = bookDiv;
+  }
+};
+const addBook = (title, author) => {
+  if (title && author) {
+    const book = {
+      title,
+      author,
+    };
+    addBookToStorage(book);
+    displayBooks();
+  }
+};
 
-
-}
-const renderBook =()=>{
-
-
-}
-
-
-const removeBook =(book)=>{
-
-}
+addForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  if ((title.value.trim !== '') && (author.value.trim !== '')) {
+    addBook(title.value, author.value);
+    title.value = '';
+    author.value = '';
+  }
+});
 
 displayBooks();
-
-
-
-
